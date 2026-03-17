@@ -1,0 +1,54 @@
+services:
+
+  opensips01:
+    build:
+      context: $REPOSITORY_ROOT
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    hostname: opensips01
+    environment:
+      XLOG_LEVEL: 4
+      FR_INV_TIMEOUT: 5
+    volumes:
+      - ${TESTS_RESULTS_DIR}/${TEST_ARTIFACTS}:/var/log/telco-opensips
+    command: |
+      opensips -F -P /var/run/opensips/opensips.pid -f /etc/opensips/opensips.cfg -l udp:opensips01:5060 -a Q_MALLOC_DBG
+    healthcheck:
+      test: ["CMD", "nc", "-zu", "opensips01", "5060"]
+      interval: 2s
+      timeout: 2s
+      retries: 5
+
+  uac01:
+    image: ctaloi/sipp
+    platform: linux/amd64
+    hostname: uac01
+    volumes:
+      - ${TESTS_DIR}/helpers/sipp:/sipp
+    command: opensips01 -sf /sipp/basic_uac.xml -s uas01 -m 1 -d 1000
+    depends_on:
+      opensips01:
+        condition: service_healthy
+      uas01:
+        condition: service_started
+      tcpdump:
+        condition: service_started
+
+  uas01:
+    image: ctaloi/sipp
+    platform: linux/amd64
+    hostname: uas01
+    volumes:
+      - ${TESTS_DIR}/helpers/sipp:/sipp
+    command: -sf /sipp/basic_uas.xml -p 5060
+    depends_on:
+      opensips01:
+        condition: service_healthy
+
+  tcpdump:
+    image: nicolaka/netshoot
+    platform: linux/amd64
+    command: tcpdump -i any port 5060 -s 0 -w /captures/capture.pcap
+    volumes:
+      - ${TESTS_RESULTS_DIR}/${TEST_ARTIFACTS}:/captures
+    network_mode: service:opensips01
