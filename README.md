@@ -55,6 +55,12 @@ Run tests filtered by tag:
 ./tests/run_tests.sh --filter-tags 001
 ```
 
+Run tests in parallel:
+
+```bash
+./tests/run_tests.sh --jobs 2
+```
+
 Test results are saved to `tests/results/`, including:
 - `report.xml` - JUnit XML report
 - Per-test directories with container logs and `.pcap` packet captures
