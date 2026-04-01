@@ -10,10 +10,12 @@ function setup() {
   TEST_ID=$(printf "%03d" $BATS_TEST_NUMBER)
   TEST_NAME_ID=$(tr " " "_" <<< $BATS_TEST_DESCRIPTION)
   export TEST_ARTIFACTS=${TEST_NAME}/${TEST_NAME_ID}
+  export TESTS_NAMESPACE="${TESTS_NAMESPACE}-${TEST_ID}"
 }
 
 function teardown() {
   echo "Tearing down test environment for ${TEST_NAME_ID}"
+  docker compose -p ${TESTS_NAMESPACE} -f ${TESTS_DIR}/compose.yml down --remove-orphans --volumes 2>/dev/null || true
 }
 
 # bats file_tags=sip
