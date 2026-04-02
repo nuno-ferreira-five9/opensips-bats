@@ -15,7 +15,6 @@ function setup() {
 
 function teardown() {
   echo "Tearing down test environment for ${TEST_NAME_ID}"
-  docker compose -p ${TESTS_NAMESPACE} -f ${TESTS_DIR}/compose.yml down --remove-orphans --volumes 2>/dev/null || true
 }
 
 # bats file_tags=sip
