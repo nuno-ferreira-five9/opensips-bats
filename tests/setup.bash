@@ -9,5 +9,6 @@ function setup_suite() {
 function teardown_suite() {
   docker compose -p ${TESTS_NAMESPACE} -f ${TESTS_DIR}/compose.yml down --remove-orphans --volumes
   docker images -q "${TESTS_NAMESPACE}*" | xargs docker rmi -f
+  docker network prune --filter "label=com.docker.compose.project=${TESTS_NAMESPACE}" -f
   return 0
 }

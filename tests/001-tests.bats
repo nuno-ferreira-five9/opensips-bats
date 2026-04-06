@@ -3,8 +3,6 @@ load "$REPOSITORY_ROOT/tests/libs/bats-support/load"
 load "$REPOSITORY_ROOT/tests/libs/bats-assert/load"
 load "$REPOSITORY_ROOT/tests/tools"
 
-
-
 function setup() {
   TEST_NAME=$(basename $BATS_TEST_FILENAME ".bats")
   TEST_ID=$(printf "%03d" $BATS_TEST_NUMBER)
@@ -15,6 +13,7 @@ function setup() {
 
 function teardown() {
   echo "Tearing down test environment for ${TEST_NAME_ID}"
+  docker compose -p ${TESTS_NAMESPACE} -f ${TESTS_DIR}/compose.yml down --remove-orphans --volumes 2>/dev/null || true
 }
 
 # bats file_tags=sip
