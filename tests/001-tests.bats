@@ -40,7 +40,7 @@ function teardown() {
 @test "000 - check opensips version" {
   run docker compose -p ${TESTS_NAMESPACE} -f ${TESTS_DIR}/compose.yml run --rm opensips01 opensips -V
   assert_success
-  assert_output --partial 'opensips 4.0.0-dev' 
+  assert_output --partial 'opensips 4.1.0-dev' 
 }
 
 # bats test_tags=001
